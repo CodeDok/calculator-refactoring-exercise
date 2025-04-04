@@ -18,21 +18,27 @@ public class BasicCalculator {
      * -Ability to store variables to a file (such as a .data in a "Calculator" Documents folder)
      * -GUI
      */
-    public static void main(String args[]) {
-
-        ArrayList<Variable> variables = new ArrayList<Variable>();
+    public static void main(String[] args) {
 
         double lastValue = 0;
 
         System.out.print("Enter a math problem: ");
 
-        while(true) {
+        while(!Thread.currentThread().isInterrupted()) {
 
             try {
-
                 System.out.println();
                 Scanner scan = new Scanner(System.in);
-                String fullEquation = scan.next();
+                if (!scan.hasNext()) {
+                    continue;
+                }
+
+                String fullEquation = scan.nextLine();
+                
+                if (fullEquation.isEmpty()) {
+                    continue;
+                }
+
                 String[] equation;
 
                 if(fullEquation.indexOf("^") != -1) {
