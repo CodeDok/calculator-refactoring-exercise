@@ -2,9 +2,15 @@ package dev.codedok;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.io.*;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class BasicCalculatorTest {
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -28,7 +34,8 @@ public class BasicCalculatorTest {
     }
 
     private void provideInput(String input) {
-        inContent = new ByteArrayInputStream(input.getBytes());
+        String inputWithNewLine = input + "\n";
+        inContent = new ByteArrayInputStream(inputWithNewLine.getBytes());
         System.setIn(inContent);
     }
 
@@ -49,116 +56,81 @@ public class BasicCalculatorTest {
         }
     }
 
-    @Test
-    public void testBasicOperations() {
-        // Test addition
-        provideInput("2+3\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("5.0"));
-
-        // Test subtraction
-        provideInput("5-3\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("2.0"));
-
-        // Test multiplication
-        provideInput("4*3\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("12.0"));
-
-        // Test division
-        provideInput("6/2\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("3.0"));
-
-        // Test modulo
-        provideInput("5%2\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("1.0"));
+    private String getFirstOutputLineFromOut() {
+        return outContent.toString().split("\\R")[1];
     }
 
-    @Test
-    public void testExponentiation() {
-        provideInput("2^3\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("8.0"));
-
-        provideInput("2^-2\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("0.25"));
+    @ParameterizedTest
+    @CsvSource({
+            "2+3, 5.0",
+            "5-3, 2.0",
+            "4*3, 12.0",
+            "6/2, 3.0",
+            "5%2, 1.0"
+    })
+    public void testBasicOperations(String input, String expected) {
+        calculateAndAssert(input, expected);
     }
 
-    @Test
-    public void testTrigonometricFunctions() {
-        // Test sine
-        provideInput("sin(0)\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("0.0"));
-
-        // Test cosine
-        provideInput("cos(0)\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("1.0"));
-
-        // Test tangent
-        provideInput("tan(0)\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("0.0"));
+    @ParameterizedTest
+    @CsvSource({
+            "2^3, 8.0",
+            "2^-3, 0.125"
+    })
+    public void testExponentiation(String input, String expected) {
+        calculateAndAssert(input, expected);
     }
 
-    @Test
-    public void testConstants() {
-        // Test pi
-        provideInput("pi\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("3.141592653589793"));
-
-        // Test e
-        provideInput("e\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("2.718281828459045"));
+    @ParameterizedTest
+    @CsvSource({
+            "sin(0), 0.0",
+            "cos(0), 1.0",
+            "tan(0), 0.0"
+    })
+    public void testTrigonometricFunctions(String input, String expected) {
+        calculateAndAssert(input, expected);
     }
 
-    @Test
-    public void testFactorial() {
-        provideInput("5!\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("120.0"));
-
-        provideInput("0!\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("1.0"));
+    @ParameterizedTest
+    @CsvSource({
+            "pi, 3.141592653589793",
+            "e, 2.718281828459045"
+    })
+    public void testConstants(String input, String expected) {
+        calculateAndAssert(input, expected);
     }
 
-    @Test
-    public void testDivisionByZero() {
-        provideInput("5/0\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("NaN"));
+    @ParameterizedTest
+    @CsvSource({
+            "0!, 1.0",
+            "5!, 120.0"
+    })
+    public void testFactorial(String input, String expected) {
+        calculateAndAssert(input, expected);
     }
 
-    @Test
-    public void testModuloByZero() {
-        provideInput("5%0\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("NaN"));
+    @ParameterizedTest
+    @CsvSource({
+            "5%0, NaN",
+            "5/0, NaN",
+            "invalid, NaN"
+    })
+    public void testNanCases(String input, String expected) {
+        calculateAndAssert(input, expected);
     }
 
-    @Test
-    public void testInvalidInput() {
-        provideInput("invalid\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("NaN"));
+    @ParameterizedTest
+    @CsvSource({
+            "-5+3, -2.0",
+            "-2*-3, 6.0"
+    })
+    public void testNegativeNumbers(String input, String expected) {
+        calculateAndAssert(input, expected);
     }
 
-    @Test
-    public void testNegativeNumbers() {
-        provideInput("-5+3\n");
+    private void calculateAndAssert(String input, String expected) {
+        provideInput(input);
         startCalculator();
-        assertTrue(outContent.toString().contains("-2.0"));
-
-        provideInput("-2*-3\n");
-        startCalculator();
-        assertTrue(outContent.toString().contains("6.0"));
+        assertThat(getFirstOutputLineFromOut()).isEqualToIgnoringNewLines(expected);
     }
 } 
