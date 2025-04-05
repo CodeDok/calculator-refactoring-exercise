@@ -5,4 +5,5 @@ Changes:
 - Add blackbox unit test
 - Use interrupt instead of while true loop
 
-Refactor to archive a better code quality by using SOLID Principles and design patterns
+Refactor to archive a better code quality by using SOLID Principles and design patterns 
+without changing the external behaviour

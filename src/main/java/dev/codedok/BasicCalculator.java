@@ -1,14 +1,16 @@
 package dev.codedok;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Main calculator class that provides the command-line interface.
+ * Follows the Single Responsibility Principle by separating the UI from the calculation logic.
+ */
 public class BasicCalculator {
 
     /*
      *  Known Issues:
      *  -Sigma doesn't work
-     *  -The if-else if-else blocks need to be replaced with a switch block
      *  -Complex expressions are not yet supported
      *  -Custom variables are not yet supported
      */
@@ -19,127 +21,38 @@ public class BasicCalculator {
      * -GUI
      */
     public static void main(String[] args) {
-
-        double lastValue = 0;
-
+        Calculator calculator = new Calculator();
+        
         System.out.print("Enter a math problem: ");
-
-        while(!Thread.currentThread().isInterrupted()) {
-
+        
+        Scanner scanner = new Scanner(System.in);
+        
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 System.out.println();
-                Scanner scan = new Scanner(System.in);
-                if (!scan.hasNext()) {
-                    continue;
-                }
-
-                String fullEquation = scan.nextLine();
                 
-                if (fullEquation.isEmpty()) {
+                if (!scanner.hasNext()) {
                     continue;
                 }
-
-                String[] equation;
-
-                if(fullEquation.indexOf("^") != -1) {
-                    lastValue = exponent(fullEquation);
-
+                
+                String equation = scanner.nextLine().trim();
+                
+                if (equation.isEmpty()) {
+                    continue;
                 }
-
-                //Multiplication,Division,Modulo Division
-                else if(fullEquation.indexOf("*") != -1) {
-                    lastValue = multiplication(fullEquation);
-
-                } else if(fullEquation.indexOf("/") != -1) {
-                    lastValue = division(fullEquation);
-
-                } else if(fullEquation.indexOf("%") != -1) {
-                    lastValue = mod(fullEquation);
-
-                }
-
-                //Addition & Subtraction
-                else if(fullEquation.indexOf("+") != -1) {
-                    lastValue = addition(fullEquation);
-
-                } else if(fullEquation.indexOf("-") != -1) {
-                    lastValue = subtraction(fullEquation);
-
-                }
-
-
-                //Trig Functions
-                else if(fullEquation.indexOf("sin") != -1) {
-                    lastValue = TrigFunctions.sine(fullEquation);
-
-                } else if(fullEquation.indexOf("cos") != -1) {
-                    lastValue = TrigFunctions.cosine(fullEquation);
-
-                } else if(fullEquation.indexOf("tan") != -1) {
-                    lastValue = TrigFunctions.tangent(fullEquation);
-
-                } else if(fullEquation.indexOf("csc") != -1) {
-                    lastValue = TrigFunctions.cosecant(fullEquation);
-
-                } else if(fullEquation.indexOf("sec") != -1) {
-                    lastValue = TrigFunctions.secant(fullEquation);
-
-                } else if(fullEquation.indexOf("cot") != -1) {
-                    lastValue = TrigFunctions.cotangent(fullEquation);
-
-                }
-
-                //Constants
-                else if(fullEquation.indexOf("pi") != -1) {
-                    lastValue = Constants.pi();
-
-                } else if(fullEquation.indexOf("e") != -1) {
-                    lastValue = Constants.e();
-
-                }
-
-
-                //Advanced Operators
-                else if(fullEquation.indexOf("!") != -1) {
-                    int operator = fullEquation.indexOf("!");
-                    long operand1 = (long) Double.parseDouble(fullEquation.substring(0,operator));
-                    lastValue = factoral(operand1);
-
-                } else if(fullEquation.indexOf("E") != -1) {
-                    int start = fullEquation.indexOf("(");
-                    System.out.println(start);
-                    int operator2 = fullEquation.indexOf(",");
-                    System.out.println(operator2);
-                    int end = fullEquation.indexOf(")");
-                    System.out.println(end);
-                    long operand1 = (long) Double.parseDouble(fullEquation.substring(start+1,operator2));
-                    double operand2 = (long) Double.parseDouble(fullEquation.substring(operator2+1,end));
-                    //lastValue = sigma(operand1,operand2);
-
-                } else {
-                    try {
-                        lastValue = Double.parseDouble(fullEquation);
-                    } catch (Exception e) {
-                        lastValue = Double.NaN;
-                    }
-                }
-
-                System.out.print(lastValue);
-
-            } catch (Exception e1) {
-                e1.printStackTrace();
+                
+                double result = calculator.calculate(equation);
+                System.out.print(result);
+                
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-
         }
-
     }
 
-
+    // The following methods are kept for backward compatibility or reference
+    
     public static double exponent(String equation) {
-
-        //Lots of work will be needed in order to support negative exponents
-
         int operator = equation.indexOf("^");
         String operand1String = equation.substring(0,operator);
         String operand2String = equation.substring(operator+1,equation.length());
@@ -159,16 +72,13 @@ public class BasicCalculator {
     }
 
     public static double multiplication(String equation) {
-
         int operator = equation.indexOf("*");
         double operand1 = Double.parseDouble(equation.substring(0,operator));
         double operand2 = Double.parseDouble(equation.substring(operator+1,equation.length()));
         return operand1 * operand2;
-
     }
 
     public static double division(String equation) {
-
         int operator = equation.indexOf("/");
         double operand1 = Double.parseDouble(equation.substring(0,operator));
         double operand2 = Double.parseDouble(equation.substring(operator+1,equation.length()));
@@ -177,7 +87,6 @@ public class BasicCalculator {
         } else {
             return operand1 / operand2;
         }
-
     }
 
     public static double addition(String equation) {
@@ -195,7 +104,6 @@ public class BasicCalculator {
     }
 
     public static double mod(String equation) {
-
         int operator = equation.indexOf("%");
         double operand1 = Double.parseDouble(equation.substring(0,operator));
         double operand2 = Double.parseDouble(equation.substring(operator+1,equation.length()));
@@ -204,9 +112,7 @@ public class BasicCalculator {
         } else {
             return operand1 % operand2;
         }
-
     }
-
 
     public static double factoral(double n) {
         if(n==0)
@@ -214,12 +120,9 @@ public class BasicCalculator {
         return n * factoral(n-1);
     }
 
-
     public static double sigma(long max, double n) {
         if(n == max)
             return n;
         return sigma(max, n+1);
-
     }
-
 }
