@@ -1,6 +1,9 @@
-package dev.codedok;
+package dev.codedok.util;
 
 public class TrigFunctions {
+
+    private TrigFunctions() {}
+
     public static double sine(String equation) {
 
         int open = equation.indexOf("(");
