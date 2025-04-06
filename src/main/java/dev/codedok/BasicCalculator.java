@@ -1,10 +1,14 @@
 package dev.codedok;
 
-import dev.codedok.strategy.*;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Function;
+
+import dev.codedok.util.AdvancedOperations;
+import dev.codedok.util.Constants;
+import dev.codedok.util.SimpleOperations;
+import dev.codedok.util.TrigFunctions;
 
 public class BasicCalculator {
 
@@ -24,9 +28,8 @@ public class BasicCalculator {
 
     public static void main(String[] args) {
 
-        CalculatorContext context = new CalculatorContext();
 
-        Map<String, OperationStrategy> operations = getOperations();
+        Map<String, Function<String, Double>> operations = getOperations();
 
         double lastValue;
 
@@ -47,43 +50,48 @@ public class BasicCalculator {
                     continue;
                 }
 
-                OperationStrategy strategy = operations.entrySet().stream()
+               lastValue = operations.entrySet().stream()
                         .filter(entry -> fullEquation.contains(entry.getKey()))
                         .findFirst()
-                        .map(Map.Entry::getValue)
-                        .orElse(new CheckEquationOperation());
-
-                context.setOperationStrategy(strategy);
-
-                lastValue = context.executeOperationStrategy(fullEquation);
+                        .map(entry -> entry.getValue().apply(fullEquation))
+                        .orElse(checkEquation(fullEquation));
 
                 System.out.print(lastValue);
 
             } catch (RuntimeException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
 
     }
 
-    public static Map<String, OperationStrategy> getOperations() {
-        Map<String, OperationStrategy> operations = new LinkedHashMap<>();
-        operations.put("^", new ExponentOperation());
-        operations.put("*", new MultiplicationOperation());
-        operations.put("/", new DivisionOperation());
-        operations.put("%", new ModuloOperation());
-        operations.put("+", new AdditionOperation());
-        operations.put("-", new SubtractionOperation());
-        operations.put("sin", new SineOperation());
-        operations.put("cos", new CosineOperation());
-        operations.put("tan", new TangentOperation());
-        operations.put("csc", new CosecantOperation());
-        operations.put("sec", new SecantOperation());
-        operations.put("cot", new CotangentOperation());
-        operations.put("pi", new PiOperation());
-        operations.put("e", new EOperation());
-        operations.put("!", new FactorialOperation());
-        operations.put("E", new SigmaOperation());
-        return operations;
+    public static Map<String, Function<String, Double>> getOperations() {
+        Map<String, Function<String, Double>> handlers = new LinkedHashMap<>();
+        handlers.put("^", AdvancedOperations::exponent);
+        handlers.put("*", SimpleOperations::multiplication);
+        handlers.put("/", SimpleOperations::division);
+        handlers.put("%", AdvancedOperations::mod);
+        handlers.put("+", SimpleOperations::addition);
+        handlers.put("-", SimpleOperations::subtraction);
+        handlers.put("sin", TrigFunctions::sine);
+        handlers.put("cos", TrigFunctions::cosine);
+        handlers.put("tan", TrigFunctions::tangent);
+        handlers.put("csc", TrigFunctions::cosecant);
+        handlers.put("sec", TrigFunctions::secant);
+        handlers.put("cot", TrigFunctions::cotangent);
+        handlers.put("pi", Constants::pi);
+        handlers.put("e", Constants::e);
+        handlers.put("!", AdvancedOperations::factorial);
+        handlers.put("E", AdvancedOperations::sigma);
+        return handlers;
     }
+
+    public static double checkEquation(String equation) {
+        try {
+            return Double.parseDouble(equation);
+        } catch (Exception e) {
+            return Double.NaN;
+        }
+    }
+
 }
