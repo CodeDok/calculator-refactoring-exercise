@@ -1,5 +1,6 @@
 package dev.codedok;
 
+import dev.codedok.controller.BasicCalculator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
