@@ -1,27 +1,34 @@
 package dev.codedok.operation;
 
 /**
- * Base class for trigonometric operations
+ * Base class for trigonometric operations.
+ * This class provides common functionality for sine, cosine, tangent and other
+ * trigonometric operations.
  */
 public abstract class TrigonometricOperation extends UnaryOperation {
     
-    protected TrigonometricOperation(String functionName) {
+    /**
+     * Creates a new trigonometric operation with the given function name.
+     * 
+     * @param functionName The name of the trigonometric function (e.g., "sin", "cos")
+     */
+    protected TrigonometricOperation(final String functionName) {
         super(functionName);
     }
     
     @Override
-    protected double parseOperand(String input) {
-        int openParenIndex = input.indexOf("(");
-        int closeParenIndex = input.indexOf(")");
+    protected double parseOperand(final String input) {
+        final int openParenIndex = input.indexOf('(');
+        final int closeParenIndex = input.indexOf(')');
         
         if (openParenIndex == -1 || closeParenIndex == -1) {
             return Double.NaN;
         }
         
         try {
-            String operandString = input.substring(openParenIndex + 1, closeParenIndex).trim();
+            final String operandString = input.substring(openParenIndex + 1, closeParenIndex).trim();
             return Double.parseDouble(operandString);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return Double.NaN;
         }
     }

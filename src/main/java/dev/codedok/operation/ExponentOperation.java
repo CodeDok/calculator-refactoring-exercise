@@ -1,41 +1,45 @@
 package dev.codedok.operation;
 
 /**
- * Performs exponentiation operation
+ * Performs exponentiation operation.
+ * This class handles raising one number to the power of another.
  */
 public class ExponentOperation extends BinaryOperation {
     
+    /**
+     * Creates a new exponent operation using the caret (^) as operator.
+     */
     public ExponentOperation() {
         super('^');
     }
     
     @Override
-    protected double calculate(double operand1, double operand2) {
+    protected double calculate(final double operand1, final double operand2) {
         return Math.pow(operand1, operand2);
     }
     
     @Override
-    public double execute(String input) {
+    public double execute(final String input) {
         // Special handling for negative exponents
-        int operatorIndex = input.indexOf(operatorSymbol);
+        final int operatorIndex = input.indexOf(operatorSymbol);
         if (operatorIndex < 0) {
             return Double.NaN;
         }
         
         try {
-            String leftPart = input.substring(0, operatorIndex).trim();
-            String rightPart = input.substring(operatorIndex + 1).trim();
+            final String leftPart = input.substring(0, operatorIndex).trim();
+            final String rightPart = input.substring(operatorIndex + 1).trim();
             
             // Check for empty parts
             if (leftPart.isEmpty() || rightPart.isEmpty()) {
                 return Double.NaN;
             }
             
-            double base = Double.parseDouble(leftPart);
-            double exponent = Double.parseDouble(rightPart);
+            final double base = Double.parseDouble(leftPart);
+            final double exponent = Double.parseDouble(rightPart);
             
             return Math.pow(base, exponent);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return Double.NaN;
         }
     }

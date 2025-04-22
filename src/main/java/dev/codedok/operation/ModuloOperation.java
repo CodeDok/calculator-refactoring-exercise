@@ -1,18 +1,22 @@
 package dev.codedok.operation;
 
 /**
- * Performs modulo operation
+ * Performs modulo operation.
+ * This class handles the modulo (remainder) of two numeric operands.
  */
 public class ModuloOperation extends BinaryOperation {
     
+    /**
+     * Creates a new modulo operation using the percent sign (%) as operator.
+     */
     public ModuloOperation() {
         super('%');
     }
     
     @Override
-    protected double calculate(double operand1, double operand2) {
+    protected double calculate(final double operand1, final double operand2) {
         if (operand2 == 0) {
-            return Double.NaN;
+            return Double.NaN; // Modulo by zero results in NaN
         }
         return operand1 % operand2;
     }

@@ -1,22 +1,36 @@
 package dev.codedok.operation;
 
 /**
- * Abstract base class for binary operations
+ * Abstract base class for binary operations.
+ * Binary operations work with two operands and an operator symbol.
  */
 public abstract class BinaryOperation implements Operation {
+    /** The character symbol representing this operation (e.g., '+', '-') */
     protected final char operatorSymbol;
 
-    protected BinaryOperation(char operatorSymbol) {
+    /**
+     * Creates a new binary operation with the given operator symbol.
+     *
+     * @param operatorSymbol The character that represents this operation
+     */
+    protected BinaryOperation(final char operatorSymbol) {
         this.operatorSymbol = operatorSymbol;
     }
 
     @Override
-    public boolean canHandle(String input) {
+    public boolean canHandle(final String input) {
         return input.indexOf(operatorSymbol) != -1;
     }
 
-    protected double[] parseOperands(String input) {
+    /**
+     * Parses the input string to extract the two operands for this binary operation.
+     *
+     * @param input The input string containing the operation
+     * @return An array of two doubles representing the operands
+     */
+    protected double[] parseOperands(final String input) {
         int operatorIndex = input.indexOf(operatorSymbol);
+        double[] result = new double[2];
         
         // Handle special case for negative numbers
         if (operatorIndex == 0 && input.length() > 1) {
@@ -24,37 +38,49 @@ public abstract class BinaryOperation implements Operation {
             operatorIndex = input.indexOf(operatorSymbol, 1);
             if (operatorIndex == -1) {
                 // No operator found, just parse as a number
-                return new double[] { Double.parseDouble(input), 0 };
+                result[0] = Double.parseDouble(input);
+                result[1] = 0;
+                return result;
             }
         }
         
-        String operand1String = input.substring(0, operatorIndex).trim();
-        String operand2String = input.substring(operatorIndex + 1).trim();
+        final String operand1String = input.substring(0, operatorIndex).trim();
+        final String operand2String = input.substring(operatorIndex + 1).trim();
         
         // Handle empty strings
         if (operand1String.isEmpty() || operand2String.isEmpty()) {
-            return new double[] { 0, 0 };
+            result[0] = 0;
+            result[1] = 0;
+            return result;
         }
         
-        double operand1 = Double.parseDouble(operand1String);
-        double operand2 = Double.parseDouble(operand2String);
+        final double operand1 = Double.parseDouble(operand1String);
+        final double operand2 = Double.parseDouble(operand2String);
         
-        return new double[] { operand1, operand2 };
+        result[0] = operand1;
+        result[1] = operand2;
+        return result;
     }
 
     @Override
-    public double execute(String input) {
+    public double execute(final String input) {
+        double result;
         try {
-            double[] operands = parseOperands(input);
-            return calculate(operands[0], operands[1]);
-        } catch (Exception e) {
+            final double[] operands = parseOperands(input);
+            result = calculate(operands[0], operands[1]);
+        } catch (NumberFormatException e) {
             // Return NaN for any parsing errors
-            return Double.NaN;
+            result = Double.NaN;
         }
+        return result;
     }
 
     /**
-     * Performs the actual calculation with the two operands
+     * Performs the actual calculation with the two operands.
+     * 
+     * @param operand1 The first operand
+     * @param operand2 The second operand
+     * @return The result of applying this operation to the operands
      */
     protected abstract double calculate(double operand1, double operand2);
 }

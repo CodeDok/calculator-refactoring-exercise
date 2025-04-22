@@ -5,33 +5,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Registry for all operations supported by the calculator
+ * Registry for all operations supported by the calculator.
  * Follows the Open-Closed Principle by allowing new operations
- * to be added without changing existing code
+ * to be added without changing existing code.
  */
 public class OperationRegistry {
+    /** List of registered operations */
     private final List<Operation> operations = new ArrayList<>();
     
     /**
-     * Creates a new registry with default operations
+     * Creates a new registry with default operations.
      */
     public OperationRegistry() {
         registerDefaultOperations();
     }
     
     /**
-     * Registers a new operation
+     * Registers a new operation.
+     *
+     * @param operation The operation to register
      */
-    public void register(Operation operation) {
+    public void register(final Operation operation) {
         operations.add(operation);
     }
     
     /**
-     * Finds the first operation that can handle the given input
+     * Finds the first operation that can handle the given input.
+     * 
+     * @param input The input string to find an operation for
      * @return The operation or null if no operation can handle it
      */
-    public Operation findOperation(String input) {
-        for (Operation operation : operations) {
+    public Operation findOperation(final String input) {
+        for (final Operation operation : operations) {
             if (operation.canHandle(input)) {
                 return operation;
             }
@@ -40,7 +45,7 @@ public class OperationRegistry {
     }
     
     /**
-     * Registers the default set of operations
+     * Registers the default set of operations.
      */
     private void registerDefaultOperations() {
         // Special case handlers - register these first for precedence
@@ -64,7 +69,7 @@ public class OperationRegistry {
         register(new TangentOperation());
         
         // Constants
-        register(new ConstantOperation("pi", Constants.pi()));
-        register(new ConstantOperation("e", Constants.e()));
+        register(new ConstantOperation("pi", Constants.getPi()));
+        register(new ConstantOperation("e", Constants.getE()));
     }
 }

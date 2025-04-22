@@ -4,6 +4,7 @@ package dev.codedok;
  * Interface for calculator implementations
  * Following the Dependency Inversion Principle
  */
+@FunctionalInterface
 public interface Calculator {
     /**
      * Evaluates the given expression and returns the result
